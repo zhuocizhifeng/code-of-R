@@ -11,7 +11,7 @@ gpl2 <- Table(gpl1)
 colnames(gpl2)
 library(org.Hs.eg.db)
 gene_bridge=AnnotationDbi::select(org.Hs.eg.db, keys=gpl2[,2], 
-                                  columns=c("SYMBOL"), #Ŀ���ʽ
+                                  columns=c("SYMBOL"), #Ä¿±ê¸ñÊ½
                                   keytype="ACCNUM")
 gpl3 <- dplyr::left_join(gpl2,gene_bridge,by=c("GB_ACC"="ACCNUM"))
 gpl3 <- gpl3[,c(1,4)]
@@ -86,7 +86,7 @@ library(org.Hs.eg.db)
 pvalueFilter=0.05
 qvalueFilter=1
 colorSel="qvalue"
-#GO富集分析
+#GOå¯Œé›†åˆ†æž
 gene <- rownames(diffgene)
 #entrezIDs <- mget(gene, org.Hs.egSYMBOL2EG, ifnotfound=NA)
 gene.df <- bitr(gene, fromType = 'SYMBOL',
@@ -96,19 +96,19 @@ head(gene.df)
 ee=enrichGO(gene = gene.df$ENTREZID,OrgDb = org.Hs.eg.db, pvalueCutoff =1, qvalueCutoff = 1, ont="all", readable =T)
 GO=as.data.frame(ee)
 GO=GO[(GO$pvalue<pvalueFilter & GO$qvalue<qvalueFilter),]
-#保存富集结果
+#ä¿å­˜å¯Œé›†ç»“æžœ
 write.table(GO,file="GO_DEGs.txt",sep="\t",quote=F,row.names = F)
-#定义显示Term数目
+#å®šä¹‰æ˜¾ç¤ºTermæ•°ç›®
 showNum=5
 if(nrow(GO)<30){
   showNum=nrow(GO)
 }
-#柱状???
+#æŸ±çŠ¶???
 pdf(file="DEGs_GObarplot.pdf",width = 20,height =18)
 bar=barplot(ee, drop = TRUE, showCategory =showNum,split="ONTOLOGY",color = colorSel)+ facet_grid(ONTOLOGY~., scale='free')
 print(bar)
 dev.off()
-#气泡???
+#æ°”æ³¡???
 pdf(file="DEGs_GObubble.pdf",width = 12,height =10)
 bub=dotplot(ee,showCategory = showNum, orderBy = "GeneRatio",split="ONTOLOGY", color = colorSel) + facet_grid(ONTOLOGY~., scale='free')
 print(bub)
